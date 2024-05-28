@@ -2,6 +2,7 @@
 
 [![NuGet version badge](https://img.shields.io/nuget/v/OpenTelemetry.Extensions)](https://www.nuget.org/packages/OpenTelemetry.Extensions)
 [![NuGet download count badge](https://img.shields.io/nuget/dt/OpenTelemetry.Extensions)](https://www.nuget.org/packages/OpenTelemetry.Extensions)
+[![codecov.io](https://codecov.io/gh/open-telemetry/opentelemetry-dotnet-contrib/branch/main/graphs/badge.svg?flag=unittests-Extensions)](https://app.codecov.io/gh/open-telemetry/opentelemetry-dotnet-contrib?flags[0]=unittests-Extensions)
 
 Contains useful features and extensions to the OpenTelemetry .NET SDK that are
 not part of the official OpenTelemetry specification but might be added in the
@@ -36,4 +37,19 @@ public static TracerProviderBuilder AddMyExporter(this TracerProviderBuilder bui
                     options.BatchExportProcessorOptions.MaxExportBatchSize))
         .AddAutoFlushActivityProcessor(a => a.Parent == null && (a.Kind == ActivityKind.Server || a.Kind == ActivityKind.Consumer), 5000);
 }
+```
+
+### BaggageActivityProcessor
+
+The BaggageActivityProcessor reads entries stored in Baggage from the current `Baggage`
+and adds the baggage keys and values to the `Activity` as tags (attributes) on start.
+
+Add this activity processor to a tracer provider.
+
+Example of adding BaggageActivityProcessor to `TracerProvider`:
+
+```cs
+var tracerProvider = Sdk.CreateTracerProviderBuilder()
+    .AddBaggageActivityProcessor()
+    .Build();
 ```

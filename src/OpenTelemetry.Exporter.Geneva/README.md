@@ -2,6 +2,7 @@
 
 [![NuGet version badge](https://img.shields.io/nuget/v/OpenTelemetry.Exporter.Geneva)](https://www.nuget.org/packages/OpenTelemetry.Exporter.Geneva)
 [![NuGet download count badge](https://img.shields.io/nuget/dt/OpenTelemetry.Exporter.Geneva)](https://www.nuget.org/packages/OpenTelemetry.Exporter.Geneva)
+[![codecov.io](https://codecov.io/gh/open-telemetry/opentelemetry-dotnet-contrib/branch/main/graphs/badge.svg?flag=unittests-Exporter.Geneva)](https://app.codecov.io/gh/open-telemetry/opentelemetry-dotnet-contrib?flags[0]=unittests-Exporter.Geneva)
 
 The Geneva Exporter exports telemetry to
 [Event Tracing for Windows (ETW)](https://docs.microsoft.com/windows/win32/etw/about-event-tracing)
@@ -262,13 +263,7 @@ specification](https://github.com/open-telemetry/opentelemetry-proto/blob/v1.1.0
 
 > [!NOTE]
  > `PrivatePreviewEnableOtlpProtobufEncoding` is currently
- > only supported in Windows environment. Exporting
- > [Exemplar](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/sdk.md#exemplar)
- > and
- > [ExponentialHistogram](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/data-model.md#exponentialhistogram)
- > are not supported for now.
- > ([#1685](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/1685),
- > [#1378](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/1378)).
+ > only supported in Windows environment.
 
 #### `MetricExportIntervalMilliseconds` (optional)
 

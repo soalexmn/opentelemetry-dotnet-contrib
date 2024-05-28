@@ -185,18 +185,15 @@ public class GenevaMetricExporterTests
                 var metricDataValue = Convert.ToUInt64(metricPoint.GetSumLong());
                 var metricData = new MetricData { UInt64Value = metricDataValue };
 
-#if EXPOSE_EXPERIMENTAL_FEATURES
-                var exemplars = metricPoint.GetExemplars();
-#endif
+                metricPoint.TryGetExemplars(out var exemplars);
                 var bodyLength = exporter.SerializeMetricWithTLV(
                     MetricEventType.ULongMetric,
                     metric.Name,
                     metricPoint.EndTime.ToFileTime(),
                     metricPoint.Tags,
                     metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                    MetricType.LongSum,
                     exemplars,
-#endif
                     out _,
                     out _);
 
@@ -384,9 +381,7 @@ public class GenevaMetricExporterTests
 
         if (hasExemplars)
         {
-#if EXPOSE_EXPERIMENTAL_FEATURES
-            meterProviderBuilder.SetExemplarFilter(new AlwaysOnExemplarFilter());
-#endif
+            meterProviderBuilder.SetExemplarFilter(ExemplarFilterType.AlwaysOn);
         }
 
         if (hasFilteredTagsForExemplars)
@@ -982,9 +977,7 @@ public class GenevaMetricExporterTests
         metricPointsEnumerator.MoveNext();
         var metricPoint = metricPointsEnumerator.Current;
 
-#if EXPOSE_EXPERIMENTAL_FEATURES
-        var exemplars = metricPoint.GetExemplars();
-#endif
+        metricPoint.TryGetExemplars(out var exemplars);
 
         List<TlvField> fields = null;
 
@@ -999,9 +992,8 @@ public class GenevaMetricExporterTests
                 metricPoint.EndTime.ToFileTime(),
                 metricPoint.Tags,
                 metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1027,9 +1019,8 @@ public class GenevaMetricExporterTests
                 metricPoint.EndTime.ToFileTime(),
                 metricPoint.Tags,
                 metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1057,9 +1048,8 @@ public class GenevaMetricExporterTests
                 metricPoint.EndTime.ToFileTime(),
                 metricPoint.Tags,
                 metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1087,9 +1077,8 @@ public class GenevaMetricExporterTests
                 metricPoint.EndTime.ToFileTime(),
                 metricPoint.Tags,
                 metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1124,9 +1113,8 @@ public class GenevaMetricExporterTests
                 count,
                 min,
                 max,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1165,11 +1153,15 @@ public class GenevaMetricExporterTests
             Assert.Equal(bodyLength, data.LenBody);
         }
 
-#if EXPOSE_EXPERIMENTAL_FEATURES
-        if (exemplars.Length > 0)
-        {
-            var validExemplars = exemplars.Where(exemplar => exemplar.Timestamp != default).ToList();
+        List<Exemplar> validExemplars = new List<Exemplar>();
 
+        foreach (var exemplar in exemplars)
+        {
+            validExemplars.Add(exemplar);
+        }
+
+        if (validExemplars.Count > 0)
+        {
             var exemplarsPayload = fields.FirstOrDefault(field => field.Type == PayloadTypes.Exemplars).Value as Exemplars;
             var singleExemplarList = exemplarsPayload.ExemplarList;
 
@@ -1187,7 +1179,6 @@ public class GenevaMetricExporterTests
                 AssertExemplarFilteredTagSerialization(expectedExemplar, serializedExemplar);
             }
         }
-#endif
 
         // Check metric name, account, and namespace
         var connectionStringBuilder = new ConnectionStringBuilder(exporterOptions.ConnectionString);
@@ -1260,7 +1251,6 @@ public class GenevaMetricExporterTests
         Assert.Equal(dimensionsCount, dimensions.NumDimensions);
     }
 
-#if EXPOSE_EXPERIMENTAL_FEATURES
     private static void AssertExemplarFilteredTagSerialization(Exemplar expectedExemplar, SingleExemplar serializedExemplar)
     {
         var serializedExemplarBody = serializedExemplar.Body;
@@ -1271,6 +1261,9 @@ public class GenevaMetricExporterTests
                 .TotalMilliseconds * 1000000;
 
         // TODO: Test for exemplar values stored as long
+        // Ideally we could assert the long on serializedExemplarBody.Value.ValueAsVlq
+        // But the result returned by it is not correct so skipping the long check for now.
+        // TODO: follow up to see if this is a bug in KaitaiStruct.Runtime.CSharp.
         if (!serializedExemplarBody.Value.IsDoubleStoredAsLong)
         {
             Assert.Equal(expectedExemplar.DoubleValue, serializedExemplarBody.Value.ValueAsDouble);
@@ -1278,39 +1271,42 @@ public class GenevaMetricExporterTests
 
         Assert.Equal((ulong)expectedUnixNanoSeconds, serializedExemplarBody.TimeUnixNano);
 
-        if (expectedExemplar.TraceId.HasValue)
+        if (expectedExemplar.TraceId != default)
         {
             var traceIdBytes = new byte[16];
-            expectedExemplar.TraceId.Value.CopyTo(traceIdBytes);
+            expectedExemplar.TraceId.CopyTo(traceIdBytes);
 
             Assert.Equal(16, serializedExemplarBody.TraceId.Length);
             Assert.True(traceIdBytes.SequenceEqual(serializedExemplarBody.TraceId));
         }
 
-        if (expectedExemplar.SpanId.HasValue)
+        if (expectedExemplar.SpanId != default)
         {
             var spanIdBytes = new byte[8];
-            expectedExemplar.SpanId.Value.CopyTo(spanIdBytes);
+            expectedExemplar.SpanId.CopyTo(spanIdBytes);
 
             Assert.Equal(8, serializedExemplarBody.SpanId.Length);
             Assert.True(spanIdBytes.SequenceEqual(serializedExemplarBody.SpanId));
         }
 
-        if (expectedExemplar.FilteredTags != null && expectedExemplar.FilteredTags.Count > 0)
+        int filteredTagsActualCount = serializedExemplarBody.NumberOfLabels;
+        int filteredTagsExpectedCount = 0;
+        int filteredTagsActualIndex = 0;
+
+        foreach (var tag in expectedExemplar.FilteredTags)
         {
-            Assert.Equal(expectedExemplar.FilteredTags.Count, serializedExemplarBody.NumberOfLabels);
+            var expectedFilteredTag = tag;
+            var serializedFilteredTag = serializedExemplarBody.Labels[filteredTagsActualIndex];
 
-            for (int i = 0; i < expectedExemplar.FilteredTags.Count; i++)
-            {
-                var expectedFilteredTag = expectedExemplar.FilteredTags[i];
-                var serializedFilteredTag = serializedExemplarBody.Labels[i];
+            Assert.Equal(expectedFilteredTag.Key, serializedFilteredTag.Name.Value);
+            Assert.Equal(expectedFilteredTag.Value, serializedFilteredTag.Value.Value);
 
-                Assert.Equal(expectedFilteredTag.Key, serializedFilteredTag.Name.Value);
-                Assert.Equal(expectedFilteredTag.Value, serializedFilteredTag.Value.Value);
-            }
+            filteredTagsActualIndex++;
+            filteredTagsExpectedCount++;
         }
+
+        Assert.Equal(filteredTagsExpectedCount, filteredTagsActualCount);
     }
-#endif
 
     private static UserdataV2 GetSerializedData(Metric metric, TlvMetricExporter exporter)
     {
@@ -1319,9 +1315,7 @@ public class GenevaMetricExporterTests
         metricPointsEnumerator.MoveNext();
         var metricPoint = metricPointsEnumerator.Current;
 
-#if EXPOSE_EXPERIMENTAL_FEATURES
-        var exemplars = metricPoint.GetExemplars();
-#endif
+        metricPoint.TryGetExemplars(out var exemplars);
 
         UserdataV2 result = null;
 
@@ -1335,9 +1329,8 @@ public class GenevaMetricExporterTests
                 metricPoint.EndTime.ToFileTime(),
                 metricPoint.Tags,
                 metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1356,9 +1349,8 @@ public class GenevaMetricExporterTests
                 metricPoint.EndTime.ToFileTime(),
                 metricPoint.Tags,
                 metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1379,9 +1371,8 @@ public class GenevaMetricExporterTests
                 metricPoint.EndTime.ToFileTime(),
                 metricPoint.Tags,
                 metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1402,9 +1393,8 @@ public class GenevaMetricExporterTests
                 metricPoint.EndTime.ToFileTime(),
                 metricPoint.Tags,
                 metricData,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 
@@ -1432,9 +1422,8 @@ public class GenevaMetricExporterTests
                 count,
                 min,
                 max,
-#if EXPOSE_EXPERIMENTAL_FEATURES
+                metricType,
                 exemplars,
-#endif
                 out _,
                 out _);
 

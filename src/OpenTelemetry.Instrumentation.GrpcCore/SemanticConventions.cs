@@ -17,10 +17,14 @@ internal static class SemanticConventions
     public const string AttributeMessageID = "message.id";
     public const string AttributeMessageCompressedSize = "message.compressed_size";
     public const string AttributeMessageUncompressedSize = "message.uncompressed_size";
-    public const string AttributeOtelStatusCode = "otel.status_code";
-    public const string AttributeOtelStatusDescription = "otel.status_description";
 
     // Used for unit testing only.
     internal const string AttributeActivityIdentifier = "activityidentifier";
+
+    // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/exceptions/exceptions-spans.md
+    internal const string AttributeExceptionEventName = "exception";
+    internal const string AttributeExceptionType = "exception.type";
+    internal const string AttributeExceptionMessage = "exception.message";
+    internal const string AttributeExceptionStacktrace = "exception.stacktrace";
 #pragma warning restore SA1600 // Elements should be documented
 }

@@ -6,7 +6,9 @@ using System.Diagnostics;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Instrumentation.SqlClient.Implementation;
+#if !NETFRAMEWORK
 using OpenTelemetry.Tests;
+#endif
 using OpenTelemetry.Trace;
 using Xunit;
 
@@ -34,8 +36,8 @@ public class SqlClientTests : IDisposable
     [Fact]
     public void SqlClient_BadArgs()
     {
-        TracerProviderBuilder builder = null;
-        Assert.Throws<ArgumentNullException>(() => builder.AddSqlClientInstrumentation());
+        TracerProviderBuilder? builder = null;
+        Assert.Throws<ArgumentNullException>(() => builder!.AddSqlClientInstrumentation());
     }
 
     [Fact]
@@ -377,6 +379,7 @@ public class SqlClientTests : IDisposable
         Assert.Contains(
             samplingParameters.Tags,
             kvp => kvp.Key == SemanticConventions.AttributeDbSystem
+                   && kvp.Value != null
                    && (string)kvp.Value == SqlActivitySourceHelper.MicrosoftSqlServerDatabaseSystemName);
     }
 

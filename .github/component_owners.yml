@@ -20,15 +20,14 @@ components:
     - SergeyKanzhelev
   src/OpenTelemetry.Extensions/:
     - codeblanch
+    - mikegoldsmith
   src/OpenTelemetry.Extensions.AWS/:
     - srprash
-    - atshaw43
     - ppittle
   src/OpenTelemetry.Extensions.Enrichment/:
     - xakep139
   src/OpenTelemetry.Instrumentation.AWS/:
     - srprash
-    - atshaw43
     - ppittle
   src/OpenTelemetry.Instrumentation.AWSLambda/:
     - rypdal
@@ -62,27 +61,28 @@ components:
     - vishweshbankwar
   src/OpenTelemetry.ResourceDetectors.AWS/:
     - srprash
-    - atshaw43
     - ppittle
-  src/OpenTelemetry.ResourceDetectors.Azure/:
-    - rajkumar-rangaraj
-    - vishweshbankwar
   src/OpenTelemetry.ResourceDetectors.Container/:
     - iskiselev
-  src/OpenTelemetry.ResourceDetectors.Host/:
+  src/OpenTelemetry.Resources.Azure/:
+    - rajkumar-rangaraj
+    - vishweshbankwar
+  src/OpenTelemetry.Resources.Host/:
     - Kielek
     - lachmatt
-  src/OpenTelemetry.ResourceDetectors.Process/:
+  src/OpenTelemetry.Resources.Process/:
     - Kielek
     - lachmatt
-  src/OpenTelemetry.ResourceDetectors.ProcessRuntime/:
+  src/OpenTelemetry.Resources.ProcessRuntime/:
     - Kielek
     - lachmatt
+  src/OpenTelemetry.Resources.Gcp/:
+    - matt-hensley
+    - pyohannes
   src/OpenTelemetry.Sampler.AWS/:
     - srprash
-    - atshaw43
     - ppittle
-  test/OpenTelemetry.Exporter.Geneva.Benchmark/:
+  test/OpenTelemetry.Exporter.Geneva.Benchmarks/:
     - cijothomas
     - codeblanch
     - reyang
@@ -114,15 +114,15 @@ components:
     - SergeyKanzhelev
   test/OpenTelemetry.Extensions.Tests/:
     - codeblanch
+    - mikegoldsmith
   test/OpenTelemetry.Extensions.AWS.Tests/:
     - srprash
-    - atshaw43
     - ppittle
   test/OpenTelemetry.Extensions.Enrichment.Tests/:
     - xakep139
   test/OpenTelemetry.Instrumentation.AWS.Tests/:
     - srprash
-    - atshaw43
+    - ppittle
   test/OpenTelemetry.Instrumentation.AWSLambda.Tests/:
     - rypdal
     - Oberon00
@@ -151,23 +151,24 @@ components:
     - vishweshbankwar
   test/OpenTelemetry.ResourceDetectors.AWS.Tests/:
     - srprash
-    - atshaw43
     - ppittle
-  test/OpenTelemetry.ResourceDetectors.Azure.Tests/:
-    - rajkumar-rangaraj
-    - vishweshbankwar
   test/OpenTelemetry.ResourceDetectors.Container.Tests/:
     - iskiselev
-  test/OpenTelemetry.ResourceDetectors.Host.Tests/:
+  test/OpenTelemetry.Resources.Azure.Tests/:
+    - rajkumar-rangaraj
+    - vishweshbankwar
+  test/OpenTelemetry.Resources.Host.Tests/:
     - Kielek
     - lachmatt
-  test/OpenTelemetry.ResourceDetectors.Process.Tests/:
+  test/OpenTelemetry.Resources.Process.Tests/:
     - Kielek
     - lachmatt
-  test/OpenTelemetry.ResourceDetectors.ProcessRuntime.Tests/:
+  test/OpenTelemetry.Resources.ProcessRuntime.Tests/:
     - Kielek
     - lachmatt
+  test/OpenTelemetry.Resources.Gcp.Tests/:
+    - matt-hensley
+    - pyohannes
   test/OpenTelemetry.Sampler.AWS.Tests/:
     - srprash
-    - atshaw43
     - ppittle

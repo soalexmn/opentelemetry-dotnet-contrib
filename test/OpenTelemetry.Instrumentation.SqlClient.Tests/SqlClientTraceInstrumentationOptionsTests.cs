@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Diagnostics;
-using OpenTelemetry.Tests;
 using OpenTelemetry.Trace;
 using Xunit;
 
@@ -41,10 +40,10 @@ public class SqlClientTraceInstrumentationOptionsTests
     [InlineData("np:\\\\localhost\\pipe\\MSSQL$instanceName\\sql\\query", "localhost", null, "instanceName", null)]
     public void ParseDataSourceTests(
         string dataSource,
-        string expectedServerHostName,
-        string expectedServerIpAddress,
-        string expectedInstanceName,
-        string expectedPort)
+        string? expectedServerHostName,
+        string? expectedServerIpAddress,
+        string? expectedInstanceName,
+        string? expectedPort)
     {
         var sqlConnectionDetails = SqlClientTraceInstrumentationOptions.ParseDataSource(dataSource);
 
@@ -64,13 +63,14 @@ public class SqlClientTraceInstrumentationOptionsTests
     public void SqlClientTraceInstrumentationOptions_EnableConnectionLevelAttributes(
         bool enableConnectionLevelAttributes,
         string dataSource,
-        string expectedServerHostName,
-        string expectedServerIpAddress,
-        string expectedInstanceName,
-        string expectedPort)
+        string? expectedServerHostName,
+        string? expectedServerIpAddress,
+        string? expectedInstanceName,
+        string? expectedPort)
     {
         var source = new ActivitySource("sql-client-instrumentation");
         var activity = source.StartActivity("Test Sql Activity");
+        Assert.NotNull(activity);
         var options = new SqlClientTraceInstrumentationOptions()
         {
             EnableConnectionLevelAttributes = enableConnectionLevelAttributes,

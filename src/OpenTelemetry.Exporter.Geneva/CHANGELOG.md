@@ -2,9 +2,47 @@
 
 ## Unreleased
 
+## 1.9.0-alpha.1
+
+Released 2024-May-22
+
+* Update OpenTelemetry SDK version to `1.9.0-alpha.1`.
+  ([#1834](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1834))
+
+## 1.8.0
+
+Released 2024-May-15
+
+* Update OpenTelemetry SDK version to `1.8.1`.
+  ([#1798](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1798))
+
+## 1.8.0-rc.2
+
+Released 2024-May-13
+
+* **Experimental (pre-release builds only)**: Add support for exporting
+  exemplars when OTLP protobuf encoding is enabled via
+  `PrivatePreviewEnableOtlpProtobufEncoding=true` in the connection string.
+  ([#1703](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1703))
+
+* Add support for exporting
+  exponential histograms when OTLP protobuf encoding is enabled via
+  `PrivatePreviewEnableOtlpProtobufEncoding=true` in the connection string.
+  ([#1705](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1705))
+
+## 1.8.0-rc.1
+
+Released 2024-May-02
+
+* Update OpenTelemetry SDK version to `1.8.0-rc.1`.
+  ([#1689](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1689))
+
 ## 1.8.0-beta.1
 
-Released 2023-Apr-23
+**(This version has been unlisted due to incorrect dependency on stable sdk
+version 1.8.1 that prevents ability to use exemplars)**
+
+Released 2024-Apr-23
 
 * Fix a bug in `GenevaMetricExporter` where the `MetricEtwDataTransport` singleton
   is disposed.

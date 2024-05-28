@@ -58,10 +58,25 @@ flags:
       - src/OpenTelemetry.Instrumentation.AspNet
       - src/OpenTelemetry.Instrumentation.AspNet.TelemetryHttpModule
 
+  unittests-Instrumentation.AspNetCore:
+    carryforward: true
+    paths:
+      - src/OpenTelemetry.Instrumentation.AspNetCore
+
   unittests-Instrumentation.EventCounters:
     carryforward: true
     paths:
       - src/OpenTelemetry.Instrumentation.EventCounters
+
+  unittests-Instrumentation.Http:
+    carryforward: true
+    paths:
+      - src/OpenTelemetry.Instrumentation.Http
+
+  unittests-Instrumentation.GrpcNetClient:
+    carryforward: true
+    paths:
+      - src/OpenTelemetry.Instrumentation.GrpcNetClient
 
   unittests-Instrumentation.Owin:
     carryforward: true
@@ -88,7 +103,7 @@ flags:
     paths:
       - src/OpenTelemetry.Instrumentation.StackExchangeRedis
 
- unittests-Instrumentation.Wcf:
+  unittests-Instrumentation.Wcf:
     carryforward: true
     paths:
       - src/OpenTelemetry.Instrumentation.Wcf
@@ -99,22 +114,32 @@ flags:
       - src/OpenTelemetry.PersistentStorage.Abstractions
       - src/OpenTelemetry.PersistentStorage.FileSystem
 
-  unittests-ResourceDetectors.Azure:
+  unittests-Resources.Azure:
     carryforward: true
     paths:
-      - src/OpenTelemetry.ResourceDetectors.Azure
+      - src/OpenTelemetry.Resources.Azure
 
-  unittests-ResourceDetectors.Host:
+  unittests-Resources.Gcp:
     carryforward: true
     paths:
-      - src/OpenTelemetry.ResourceDetectors.Host
+      - src/OpenTelemetry.Resources.Gcp
 
-  unittests-ResourceDetectors.Process:
+  unittests-Resources.Host:
     carryforward: true
     paths:
-      - src/OpenTelemetry.ResourceDetectors.Process
+      - src/OpenTelemetry.Resources.Host
 
-  unittests-ResourceDetectors.ProcessRuntime:
+  unittests-Resources.Process:
     carryforward: true
     paths:
-      - src/OpenTelemetry.ResourceDetectors.ProcessRuntime
+      - src/OpenTelemetry.Resources.Process
+
+  unittests-Resources.ProcessRuntime:
+    carryforward: true
+    paths:
+      - src/OpenTelemetry.Resources.ProcessRuntime
+
+  unittests-SemanticConventions:
+    carryforward: true
+    paths:
+      - src/OpenTelemetry.SemanticConventions
